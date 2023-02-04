@@ -1,28 +1,59 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
+using System.Xml.XPath;
 using Aspose.Words;
 using Aspose.Words.Math;
+using Microsoft.Office.Interop.Word;
 
 namespace Example
 {
-    class MsWordEquationExtractor
+    class Program
     {
         static void Main(string[] args)
         {
-            Document doc = new Document(@"C:\Users\Wesam Nabeel\x2.docx");
+            Aspose.Words.Document doc = new Aspose.Words.Document(@"C:\Users\Wesam Nabeel\x1.docx");
 
-            int i = 0;
-            foreach (OfficeMath math in doc.GetChildNodes(NodeType.OfficeMath, true))
+            int equationNumber = 0;
+
+            foreach (Aspose.Words.Paragraph pargraph in doc.GetChildNodes(NodeType.Paragraph, true))
             {
-                Bitmap image = new Bitmap(500, 500);
-                Graphics graphics = Graphics.FromImage(image);
+                NodeCollection equations = pargraph.GetChildNodes(NodeType.OfficeMath, false);
+                foreach (OfficeMath equation in equations)
+                {
+                    Bitmap placeHolderImage = new Bitmap(1, 1);
+                    Graphics placeHolderGraphics = Graphics.FromImage(placeHolderImage);
 
-                float v = math.GetMathRenderer().RenderToSize(graphics, 1.0f, 1.0f, 500, 500);
+                    SizeF size = equation.GetMathRenderer().RenderToScale(placeHolderGraphics, 0f, 0f, 2f);
 
-                image.Save("C:\\Users\\Wesam Nabeel\\equation" + i + ".png", ImageFormat.Png);
-                i++;
+                    int width = (int)Math.Ceiling(size.Width);
+                    int height = (int)Math.Ceiling(size.Height);
+
+                    Bitmap image = new Bitmap(width, height);
+
+                    Graphics graphics = Graphics.FromImage(image);
+
+                    graphics.CompositingQuality = CompositingQuality.HighQuality;
+                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                    equation.GetMathRenderer().RenderToScale(graphics, 0f, 0f, 2f);
+
+                    Console.WriteLine(equation.GetText() + " rendered with " + size.ToString());
+
+                    Console.WriteLine("Horizontal Resolution is:" + image.HorizontalResolution.ToString() + "Vertical Resolution is:" + image.VerticalResolution.ToString());
+
+
+                    image.Save("C:\\Users\\Wesam Nabeel\\equation" + equationNumber + ".png");
+                    equationNumber++;
+                }
             }
+
+            Console.WriteLine("Press Any Key To Continue..");
+            Console.ReadKey();
         }
     }
 }
