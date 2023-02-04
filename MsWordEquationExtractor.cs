@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Windows.Forms;
-using System.Xml.XPath;
 using Aspose.Words;
 using Aspose.Words.Math;
-using Microsoft.Office.Interop.Word;
+using iTextSharp.text.pdf;
+using Document = iTextSharp.text.Document;
+using Image = iTextSharp.text.Image;
+using Rectangle = iTextSharp.text.Rectangle;
 
 namespace Example
 {
@@ -18,41 +17,42 @@ namespace Example
 
             int equationNumber = 0;
 
+            Document pdfDoc = new Document();
+            PdfWriter writer = PdfWriter.GetInstance(pdfDoc, new System.IO.FileStream("C:\\Users\\Wesam Nabeel\\equations.pdf", System.IO.FileMode.Create));
+            pdfDoc.Open();
+
             foreach (Aspose.Words.Paragraph pargraph in doc.GetChildNodes(NodeType.Paragraph, true))
             {
                 NodeCollection equations = pargraph.GetChildNodes(NodeType.OfficeMath, false);
                 foreach (OfficeMath equation in equations)
                 {
-                    Bitmap placeHolderImage = new Bitmap(1, 1);
-                    Graphics placeHolderGraphics = Graphics.FromImage(placeHolderImage);
+                    Bitmap image = new Bitmap(1, 1);
+                    Graphics graphics = Graphics.FromImage(image);
 
-                    SizeF size = equation.GetMathRenderer().RenderToScale(placeHolderGraphics, 0f, 0f, 2f);
+                    SizeF size = equation.GetMathRenderer().RenderToScale(graphics, 0f, 0f, 2f);
 
                     int width = (int)Math.Ceiling(size.Width);
                     int height = (int)Math.Ceiling(size.Height);
 
-                    Bitmap image = new Bitmap(width, height);
-
-                    Graphics graphics = Graphics.FromImage(image);
-
-                    graphics.CompositingQuality = CompositingQuality.HighQuality;
-                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    image = new Bitmap(width, height);
+                    graphics = Graphics.FromImage(image);
 
                     equation.GetMathRenderer().RenderToScale(graphics, 0f, 0f, 2f);
 
-                    Console.WriteLine(equation.GetText() + " rendered with " + size.ToString());
+                    Console.WriteLine("equation " + (equationNumber + 1) + ": " + equation.GetText());
 
-                    Console.WriteLine("Horizontal Resolution is:" + image.HorizontalResolution.ToString() + "Vertical Resolution is:" + image.VerticalResolution.ToString());
+                    Image iTextSharpImage = Image.GetInstance(image, System.Drawing.Imaging.ImageFormat.Png);
+                    pdfDoc.SetPageSize(new Rectangle(0, 0, iTextSharpImage.Width, iTextSharpImage.Height));
+                    pdfDoc.NewPage();
+                    iTextSharpImage.SetAbsolutePosition(0, 0);
+                    pdfDoc.Add(iTextSharpImage);
 
-
-                    image.Save("C:\\Users\\Wesam Nabeel\\equation" + equationNumber + ".png");
                     equationNumber++;
                 }
             }
 
-            Console.WriteLine("Press Any Key To Continue..");
+            pdfDoc.Close();
+            Console.WriteLine(equationNumber + " equations extracted");
             Console.ReadKey();
         }
     }
