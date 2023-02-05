@@ -1,27 +1,39 @@
 ﻿using System;
+using Microsoft.Office.Interop.Word;
 
-using EquationToImageConverter;
-
-namespace Example
+namespace PageSizeAdjustment
 {
     class Program
     {
         static void Main(string[] args)
         {
-            string inputFile = @"C:\Users\Wesam Nabeel\x1.docx";
-            string outputFile = "C:\\Users\\Wesam Nabeel\\equations.pdf";
-            EquationConverter equationToImage = new EquationConverter(inputFile, outputFile);
-            int extractedEquations = equationToImage.Convert();
+            Application app = new Application();
+            Document doc = app.Documents.Open("C:\\Users\\Wesam Nabeel\\good test.docx");
+            int paraCount = doc.Paragraphs.Count;
 
-            Console.WriteLine(extractedEquations + " equations extracted");
-            Console.WriteLine("Press Any Key To Continue...");
+            for (int i = paraCount; i >= 1; i--)
+            {
+                Paragraph para = doc.Paragraphs[i];
+                OMaths equations = para.Range.OMaths;
+                if (equations.Count == 0)
+                {
+
+                    try
+                    {
+                        para.Range.Delete();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("couldn't delete " + para.Range.Text + " due to " + e);
+                    }
+                }
+                
+            }
             Console.ReadKey();
+            doc.Save();
+            app.Quit();
+
 
         }
-
-    
-
     }
-
-
 }

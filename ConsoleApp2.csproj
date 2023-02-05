@@ -122,6 +122,7 @@
   <ItemGroup>
     <Compile Include="EquationConverter.cs" />
     <Compile Include="MsWordEquationExtractor.cs" />
+    <Compile Include="ParagraphSeperator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
