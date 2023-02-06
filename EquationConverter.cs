@@ -14,12 +14,14 @@ namespace EquationToImageConverter
     {
         private readonly string _inputFilePath;
         private readonly string _outputFilePath;
+        private readonly int _quality;
         private int _equationNumber;
 
-        public EquationConverter(string inputFilePath, string outputFilePath)
+        public EquationConverter(string inputFilePath, string outputFilePath, int quality)
         {
             _inputFilePath = inputFilePath;
             _outputFilePath = outputFilePath;
+            _quality = quality;
         }
 
         public int Convert()
@@ -60,7 +62,7 @@ namespace EquationToImageConverter
 
             Graphics graphics = Graphics.FromImage(image);
 
-            equation.GetMathRenderer().RenderToScale(graphics, 0f, 0f, 2f);
+            equation.GetMathRenderer().RenderToScale(graphics, 0f, 0f, _quality);
 
             return image;
         }
@@ -69,7 +71,7 @@ namespace EquationToImageConverter
         {
             Bitmap placeHolderImage = new Bitmap(1, 1);
             Graphics placeHolderGraphics = Graphics.FromImage(placeHolderImage);
-            SizeF size = equation.GetMathRenderer().RenderToScale(placeHolderGraphics, 0f, 0f, 2f);
+            SizeF size = equation.GetMathRenderer().RenderToScale(placeHolderGraphics, 0f, 0f, _quality);
             int width = (int)Math.Ceiling(size.Width);
             int height = (int)Math.Ceiling(size.Height);
             return new Size(width, height);
@@ -77,8 +79,9 @@ namespace EquationToImageConverter
 
         private void WriteToNewPdfPage(Document pdfDoc, Image iTextSharpImage)
         {
-            pdfDoc.SetPageSize(new Rectangle(0, 0, iTextSharpImage.Width, iTextSharpImage.Height));
+            pdfDoc.SetPageSize(new Rectangle(0, 0, iTextSharpImage.Width/_quality, iTextSharpImage.Height/_quality));
             pdfDoc.NewPage();
+            iTextSharpImage.ScaleToFit(new Rectangle(0, 0, iTextSharpImage.Width/_quality, iTextSharpImage.Height/_quality));
             iTextSharpImage.SetAbsolutePosition(0, 0);
             pdfDoc.Add(iTextSharpImage);
         }
