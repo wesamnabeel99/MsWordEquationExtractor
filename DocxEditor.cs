@@ -1,6 +1,5 @@
-﻿using DocumentFormat.OpenXml.ExtendedProperties;
+﻿using System;
 using Microsoft.Office.Interop.Word;
-using System;
 using Application = Microsoft.Office.Interop.Word.Application;
 
 namespace PageSizeAdjustment

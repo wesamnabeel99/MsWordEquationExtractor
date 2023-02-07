@@ -2,7 +2,6 @@
 using System.Drawing;
 using Aspose.Words;
 using Aspose.Words.Math;
-using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Document = iTextSharp.text.Document;
 using Image = iTextSharp.text.Image;
@@ -31,7 +30,7 @@ namespace EquationToImageConverter
             PdfWriter writer = PdfWriter.GetInstance(pdfDoc, new System.IO.FileStream(_outputFilePath, System.IO.FileMode.Create));
             pdfDoc.Open();
 
-            foreach (Aspose.Words.Paragraph paragraph in doc.GetChildNodes(NodeType.Paragraph, true))
+            foreach (Paragraph paragraph in doc.GetChildNodes(NodeType.Paragraph, true))
             {
                 NodeCollection equations = paragraph.GetChildNodes(NodeType.OfficeMath, false);
                 foreach (OfficeMath equation in equations)
