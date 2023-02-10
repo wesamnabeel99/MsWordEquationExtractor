@@ -5,6 +5,7 @@ using Aspose.Words;
 using Aspose.Words.Math;
 using Microsoft.Office.Interop.Word;
 using Document = Microsoft.Office.Interop.Word.Document;
+using Range = Microsoft.Office.Interop.Word.Range;
 
 namespace WordEquationToImageConverter
 {
@@ -18,6 +19,31 @@ namespace WordEquationToImageConverter
 
         }
 
+        public void SelectAllEquations()
+        {
+
+            Application word = new Application();
+            Document sourceDocument = word.Documents.Open(@"C:\Users\Wesam Nabeel\testsubject.docx");
+            Document targetDocument = word.Documents.Add();
+
+            int equationCount = 0;
+            foreach (OMath mathObject in sourceDocument.OMaths)
+            {
+                mathObject.Range.CopyAsPicture();
+                targetDocument.Content.InsertAfter("\n");
+                targetDocument.Range(targetDocument.Content.End - 1, targetDocument.Content.End).Paste();
+
+                equationCount++;
+            }
+
+            targetDocument.SaveAs2(@"C:\Users\Wesam Nabeel\equationsFile.docx");
+
+            Console.WriteLine("done!");
+            Console.ReadKey();
+            sourceDocument.Close();
+            targetDocument.Close();
+            word.Quit();
+        }
         public void SaveEquation()
         {
             Application app = new Application();
@@ -33,17 +59,18 @@ namespace WordEquationToImageConverter
             range.Text = "The equation x^2 + y^2 is:";
             range.InsertParagraphAfter();
 
-
+ 
             var equationss = doc.OMaths.Add(range);
+            
             equationss.Text = text;
             foreach(OMath omath in range.OMaths)
             {
                 omath.BuildUp();
             }
-            Console.WriteLine("modify the equation as needed");
+
+            Console.WriteLine("Confirm");
             Console.ReadKey();
 
-           
             doc.SaveAs2(@"C:\Users\Wesam Nabeel\testingIt.docx");
             doc.Close();
             app.Quit();
@@ -59,10 +86,8 @@ namespace WordEquationToImageConverter
                     Bitmap image = GetEquationImage(equation);
 
                     // Save the equation as an image
-                    image.Save(@"C:\Users\Wesam Nabeel\equation" + _equationNumber + ".png", System.Drawing.Imaging.ImageFormat.Png);
+                    image.Save(@"F:\Work\Chemistry 6th Feb 2023\equation test\equ" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".png", System.Drawing.Imaging.ImageFormat.Png);
 
-                        string newText = "FLAG_DONE"; // TODO: remove this part
-                        File.WriteAllText(@"C:\Users\Wesam Nabeel\filename.txt", newText);
 
                     }
                 }

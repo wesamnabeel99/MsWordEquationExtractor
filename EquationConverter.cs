@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
+using Aspose.Pdf.Drawing;
 using Aspose.Words;
 using Aspose.Words.Math;
 using iTextSharp.text.pdf;
+using Microsoft.Office.Interop.Word;
 using Document = iTextSharp.text.Document;
 using Image = iTextSharp.text.Image;
+using Paragraph = Aspose.Words.Paragraph;
 using Rectangle = iTextSharp.text.Rectangle;
+using Section = Aspose.Words.Section;
 
 namespace EquationToImageConverter
 {
@@ -40,10 +45,12 @@ namespace EquationToImageConverter
                     Console.WriteLine("equation " + (++_equationNumber) + ": " + equation.GetText());
 
                     Image iTextSharpImage = Image.GetInstance(image, System.Drawing.Imaging.ImageFormat.Png);
-                    WriteToNewPdfPage(pdfDoc,iTextSharpImage);
+                    WriteToNewPdfPage(pdfDoc, iTextSharpImage);
                 }
             }
 
+            Console.WriteLine("done");
+            Console.ReadKey(); 
             pdfDoc.Close();
             return _equationNumber;
         }
