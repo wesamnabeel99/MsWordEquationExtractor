@@ -27,7 +27,9 @@ namespace WordEquationToImageConverter
             Document targetDocument = word.Documents.Add();
 
             int equationCount = 0;
-            foreach (OMath mathObject in sourceDocument.OMaths)
+            OMaths equations = sourceDocument.OMaths;
+            Console.WriteLine(equations.Count + " found in the file");
+            foreach (OMath mathObject in equations)
             {
                 mathObject.Range.CopyAsPicture();
                 targetDocument.Content.InsertAfter("\n");
@@ -38,7 +40,7 @@ namespace WordEquationToImageConverter
 
             targetDocument.SaveAs2(@"C:\Users\Wesam Nabeel\equationsFile.docx");
 
-            Console.WriteLine("done!");
+            Console.WriteLine("done!" + equationCount + " converted!");
             Console.ReadKey();
             sourceDocument.Close();
             targetDocument.Close();

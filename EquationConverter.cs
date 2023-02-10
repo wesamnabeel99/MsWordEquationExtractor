@@ -49,7 +49,7 @@ namespace EquationToImageConverter
                 }
             }
 
-            Console.WriteLine("done");
+            Console.WriteLine("done" + " equation converted to image in pdf file");
             Console.ReadKey(); 
             pdfDoc.Close();
             return _equationNumber;
